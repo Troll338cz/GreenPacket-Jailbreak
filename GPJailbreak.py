@@ -104,7 +104,7 @@ if(session[0]):
     ddns_clear = {'Service':'Disable','UserName':'','Password':'','HostName':'','Status':'','InternetIpAddress':''}
 
     while(True):
-        print("======================================\n\n\tGPJailbreak v1.0\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Quit\n\n======================================")
+        print("======================================\n\n\tGPJailbreak v1.1\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Quit\n\n======================================")
         picker = input("==> ")
         match picker[0]:
             case '1':
