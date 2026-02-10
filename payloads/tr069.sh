@@ -1,6 +1,8 @@
 uci set easycwmp.@acs[0].periodic_enable='0'
 uci set easycwmp.@local[0].enable='0'
-uci set easycwmp.@acs[0].url='https://disabled/cwmp'
+uci set easycwmp.@acs[0].url='http://localhost:1337/cwmp'
 systemctl stop turin_easycwmpd.service
 systemctl disable turin_easycwmpd.service
+systemctl stop turin_devinfosvr.service
+systemctl disable turin_devinfosvr.service
 echo "TR69 disable ok" >> /tmp/status.txt

