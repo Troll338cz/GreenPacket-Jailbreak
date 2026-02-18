@@ -10,8 +10,10 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 | Free Market      | superadmin | admin |
 | O2.CZ      | admin      |   admin   |
 | O2.CZ      | superadmin      |   BCTO=O2! [^first]  |
-| Telekom Slovenije | admin      |   Gp3FeMSQ5sj68kDx [^second] |
-| Telekom Slovenije | superadmin      |   usVAQgDzv9qGXeJM [^second] |
+| SIOL | admin      |   Gp3FeMSQ5sj68kDx [^second] |
+| SIOL | superadmin      |   usVAQgDzv9qGXeJM [^second] |
+| Telekom Slovenije | admin      |   admin [^second] |
+| Telekom Slovenije | superadmin      |   TS@dministrator1234 [^second] |
 
 [^first]: Only after reset, per-device customized once device connects to ACS 
 [^second]: Verification needed
