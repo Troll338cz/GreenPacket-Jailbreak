@@ -23,5 +23,8 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 | 912.21622.102.699 | WINDTRE      |
 
 # New firmware install
-Firmware images will be available soon, currently some are being tested.
+| Version       | Link       |
+| ------------- |:-------------:|
+| 912.001.604.10 | [Download][912001604010] |
 
+[912001604010]: https://mega.nz/file/tEMllAYT#BbxW2yn_Y0S231KDYeno-XNc1kKoT6uTa9wKa7Kqva0
