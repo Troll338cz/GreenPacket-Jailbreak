@@ -31,11 +31,13 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 | 912.001.604.10 | [Download][912001604010] |
 | 112.00100.103.008 [^third] | [Download][11200100103008] |
 | 112.00100.103.008 Test | [Download][testbuild] |
+| 112.00100.103.008 Version 1 | [Download][testbuild_v1] |
 | All Other Firmware | [Download][fwrepo] |
 
-[^third]: Long-Term testing needed
+[^third]: Testing done, stable 2+ months!
 
 [912001604010]: https://mega.nz/file/VF03BJDb#4L01Ttoe7RcDCheia_vGYmJp9rqZfksp93EABJgdVfA
 [11200100103008]: https://mega.nz/file/VAtwBRgR#DoFqqrWXUO9zBnhg03KDdJsyfv8dNsnMtdzG1azM2qU
 [testbuild]: https://mega.nz/file/kR0EgT5T#ki17jTT8YHWLZr6VwpTWgtqKp0Z9-8Hl9frrBmwuEfM
+[testbuild_v1]: https://mega.nz/file/QAM1gTKC#vUM0h5xwGgjWGrefpqt3DM0L5ztcZwfT-WEWHYdphk8
 [fwrepo]: https://mega.nz/folder/ZMMhHRjJ#jSI6OA3q-utCx73_juuIzw

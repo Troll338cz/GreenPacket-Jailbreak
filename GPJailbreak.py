@@ -2,14 +2,18 @@ import requests, json, re, time, os, sys, threading, base64, hashlib, random
 import http.server
 import socketserver
 
-# Local settings for http payload server
+## Local settings for http payload server
+## You should be on same subnet as antenna
+# Your PCs IP
 settings_localip = "192.168.0.100"
+# Port where to start
 settings_localport = 8080
-# Greenpacket settings
+## Greenpacket settings
 settings_remote_ip = "192.168.0.1"
 settings_user = "superadmin"
 settings_password = "admin"
 
+## Experimental settings
 # Might not be needed outside browser
 add_lan_headers = False
 # D2U has 31 char limit
