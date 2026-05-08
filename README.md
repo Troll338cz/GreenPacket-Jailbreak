@@ -28,6 +28,7 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 # New firmware install
 > [!IMPORTANT]
 > WindTre users shouldn't try install custom firmware at this time
+
 | Version       | Link       |
 | ------------- |:-------------:|
 | 912.001.604.10 | [Download][912001604010] |
