@@ -25,16 +25,16 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 | 912.001.604.145 | O2.cz      |
 | 912.21622.102.699 | WINDTRE      |
 
+# New firmware install
 > [!IMPORTANT]
 > WindTre users shouldn't try install custom firmware at this time
-
-# New firmware install
 | Version       | Link       |
 | ------------- |:-------------:|
 | 912.001.604.10 | [Download][912001604010] |
 | 112.00100.103.008 [^third] | [Download][11200100103008] |
-| 112.00100.103.008 Test | [Download][testbuild] |
-| 112.00100.103.008 Version 1 | [Download][testbuild_v1] |
+| 112.00100.103.008 Test 0 | [Download][testbuild] |
+| 112.00100.103.008 Test 1 | [Download][testbuild_v1] |
+| 112.00100.103.008 Test2 | [Download][testbuild_v2] |
 | All Other Firmware | [Download][fwrepo] |
 
 [^third]: Testing done, stable 2+ months!
@@ -43,4 +43,5 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 [11200100103008]: https://mega.nz/file/VAtwBRgR#DoFqqrWXUO9zBnhg03KDdJsyfv8dNsnMtdzG1azM2qU
 [testbuild]: https://mega.nz/file/kR0EgT5T#ki17jTT8YHWLZr6VwpTWgtqKp0Z9-8Hl9frrBmwuEfM
 [testbuild_v1]: https://mega.nz/file/QAM1gTKC#vUM0h5xwGgjWGrefpqt3DM0L5ztcZwfT-WEWHYdphk8
+[testbuild_v1]: https://mega.nz/file/oRl3BZZa#idcjBzMBzZogjk7ZI2LISmoDMi4z4l5-DEFcXk9GLcQ
 [fwrepo]: https://mega.nz/folder/ZMMhHRjJ#jSI6OA3q-utCx73_juuIzw
