@@ -44,5 +44,5 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 [11200100103008]: https://mega.nz/file/VAtwBRgR#DoFqqrWXUO9zBnhg03KDdJsyfv8dNsnMtdzG1azM2qU
 [testbuild]: https://mega.nz/file/kR0EgT5T#ki17jTT8YHWLZr6VwpTWgtqKp0Z9-8Hl9frrBmwuEfM
 [testbuild_v1]: https://mega.nz/file/QAM1gTKC#vUM0h5xwGgjWGrefpqt3DM0L5ztcZwfT-WEWHYdphk8
-[testbuild_v1]: https://mega.nz/file/oRl3BZZa#idcjBzMBzZogjk7ZI2LISmoDMi4z4l5-DEFcXk9GLcQ
+[testbuild_v2]: https://mega.nz/file/oRl3BZZa#idcjBzMBzZogjk7ZI2LISmoDMi4z4l5-DEFcXk9GLcQ
 [fwrepo]: https://mega.nz/folder/ZMMhHRjJ#jSI6OA3q-utCx73_juuIzw
