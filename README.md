@@ -25,6 +25,9 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 | 912.001.604.145 | O2.cz      |
 | 912.21622.102.699 | WINDTRE      |
 
+> [!IMPORTANT]
+> WindTre users shouldn't try install custom firmware at this time
+
 # New firmware install
 | Version       | Link       |
 | ------------- |:-------------:|

