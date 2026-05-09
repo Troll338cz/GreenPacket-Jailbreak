@@ -32,8 +32,8 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 
 | Version       | Link       |
 | ------------- |:-------------:|
-| 912.001.604.10 | [Download][912001604010] |
-| 112.00100.103.008 [^third] | [Download][11200100103008] |
+| 912.001.604.10 Stable | [Download][912001604010] |
+| 112.00100.103.008 Old Stable [^third] | [Download][11200100103008] |
 | 112.00100.103.008 Test 0 | [Download][testbuild] |
 | 112.00100.103.008 Test 1 | [Download][testbuild_v1] |
 | 112.00100.103.008 Test 2 | [Download][testbuild_v2] |
