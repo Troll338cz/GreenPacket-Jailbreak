@@ -47,3 +47,10 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 [testbuild_v1]: https://mega.nz/file/QAM1gTKC#vUM0h5xwGgjWGrefpqt3DM0L5ztcZwfT-WEWHYdphk8
 [testbuild_v2]: https://mega.nz/file/oRl3BZZa#idcjBzMBzZogjk7ZI2LISmoDMi4z4l5-DEFcXk9GLcQ
 [fwrepo]: https://mega.nz/folder/ZMMhHRjJ#jSI6OA3q-utCx73_juuIzw
+
+
+# 🛠️ Disassembly Guide + USB Diagnostic Port
+You can disassembly the unit to access micro USB Diagnostic Port.
+
+[Diassembly guide](Disassembly.md)
+
