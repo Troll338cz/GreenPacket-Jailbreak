@@ -30,7 +30,7 @@ Theoretically all of Greenpacket devices (D5H, D2U, ...) that have been develope
 
 # New firmware install
 > [!IMPORTANT]
-> WindTre users shouldn't try install custom firmware at this time
+> Firmware can be downgraded with caution, all ISP specific configuration will be lost (Users, VLANs and APN)
 
 | Version       | Link       |
 | ------------- |:-------------:|
