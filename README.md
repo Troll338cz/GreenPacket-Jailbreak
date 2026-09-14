@@ -1,7 +1,7 @@
 
 # Device support
-Currently only H5-200Q1 has been tested. 
-Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been developed by the same OEM share a similar codebase and with minor tweaks could work. If you own those devices, testing is welcome.
+Currently only H5-200Q1,O5A and "Yes 5G Wireless Fibre Infinite Gateway" has been tested.
+Theoretically all of Greenpacket devices (D5H, D2U, ...) that have been developed by the same OEM share a similar codebase and with minor tweaks could work. If you own those devices, testing is welcome.
 
 # Default credentials
 | Carrier        | User           | Password  |
@@ -14,6 +14,8 @@ Theoretically all of Greenpacket devices (O5A, D5H, D2U, ...) that have been dev
 | SIOL | superadmin      |   usVAQgDzv9qGXeJM [^second] |
 | Telekom Slovenije | admin      |   admin [^second] |
 | Telekom Slovenije | superadmin      |   TS@dministrator1234 [^second] |
+| Yes 5G            | user            | YES@```Uppercase MAC last 3 octets``` |
+| Yes 5G            | administrator   | YTLC@```Device SN```! |
 
 [^first]: Only after reset, per-device customized once device connects to ACS 
 [^second]: Verification needed
