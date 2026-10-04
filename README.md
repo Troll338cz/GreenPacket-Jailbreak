@@ -56,3 +56,9 @@ You can disassembly the unit to access micro USB Diagnostic Port.
 
 [Diassembly guide](Disassembly.md)
 
+# TODO
+- Detailed documentation of backup file format.
+- Automate unlocking root user password with Command shell. [For now here...](https://gist.github.com/L4ky/1a068af8d9e2af3ae5efc3cad8c2a96b#get-root-access)
+- Automate export/patch/import of backup.
+- Try to fix superadmin password not changing reliably (webserver limitation).
+- Find all carriers using supported hardware and their respective credentials/firmware.
